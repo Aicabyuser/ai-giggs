@@ -3,44 +3,88 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { ToastProvider } from "@/hooks/use-toast";
 import { NotificationProvider } from "@/hooks/useNotifications";
 import MobileNavBar from "@/components/MobileNavBar";
 import PWAHandler from "@/components/PWAHandler";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// Error boundary for lazy-loaded components
+const LazyErrorBoundary = ({ children }: { children: React.ReactNode }) => {
+  try {
+    return <>{children}</>;
+  } catch (error) {
+    console.error('Error loading component:', error);
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Error Loading Component</h1>
+          <p className="text-muted-foreground mb-4">Please refresh the page or try again later.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+};
+
+// Lazy-loaded components with error handling
+const lazyLoad = (importFunc: () => Promise<any>) => {
+  return lazy(() => importFunc().catch(error => {
+    console.error('Failed to load component:', error);
+    return { default: () => (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Error Loading Component</h1>
+          <p className="text-muted-foreground mb-4">Please refresh the page or try again later.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    )};
+  }));
+};
+
 // Lazy-loaded components for better performance
-const Index = lazy(() => import("./pages/Index"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const DeveloperRegistration = lazy(() => import("./pages/DeveloperRegistration"));
-const ProjectMatching = lazy(() => import("./pages/ProjectMatching"));
-const DeveloperProfile = lazy(() => import("./pages/DeveloperProfile"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Messages = lazy(() => import("./pages/Messages"));
-const ProjectDetails = lazy(() => import("./pages/ProjectDetails"));
-const ClientDashboard = lazy(() => import("./pages/ClientDashboard"));
-const PostProject = lazy(() => import("./pages/PostProject"));
-const ManageProjects = lazy(() => import("./pages/ManageProjects"));
-const ViewBids = lazy(() => import("./pages/ViewBids"));
-const ClientProfile = lazy(() => import("./pages/ClientProfile"));
-const ClientSettings = lazy(() => import("./pages/ClientSettings"));
-const DeveloperDashboard = lazy(() => import("./pages/DeveloperDashboard"));
-const FindProjects = lazy(() => import("./pages/FindProjects"));
-const ManageBids = lazy(() => import("./pages/ManageBids"));
-const DeveloperPortfolio = lazy(() => import("./pages/DeveloperPortfolio"));
-const DeveloperSettings = lazy(() => import("./pages/DeveloperSettings"));
-const DeveloperShowcase = lazy(() => import("./pages/DeveloperShowcase"));
-const SignIn = lazy(() => import("./pages/Auth/SignIn"));
-const SignUp = lazy(() => import("./pages/Auth/SignUp"));
-const ForgotPassword = lazy(() => import("./pages/Auth/ForgotPassword"));
-const EscrowPayment = lazy(() => import("./pages/EscrowPayment"));
-const AdminEscrowVerification = lazy(() => import("./pages/AdminEscrowVerification"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const ProjectVerification = lazy(() => import("./pages/ProjectVerification"));
-const ClientVerification = lazy(() => import("./pages/ClientVerification"));
-const AuthCallback = lazy(() => import("./pages/Auth/AuthCallback"));
-const ProfileManagement = lazy(() => import("./pages/ProfileManagement"));
+const Index = lazyLoad(() => import("./pages/Index"));
+const NotFound = lazyLoad(() => import("./pages/NotFound"));
+const DeveloperRegistration = lazyLoad(() => import("./pages/DeveloperRegistration"));
+const ProjectMatching = lazyLoad(() => import("./pages/ProjectMatching"));
+const DeveloperProfile = lazyLoad(() => import("./pages/DeveloperProfile"));
+const Dashboard = lazyLoad(() => import("./pages/Dashboard"));
+const Messages = lazyLoad(() => import("./pages/Messages"));
+const ProjectDetails = lazyLoad(() => import("./pages/ProjectDetails"));
+const ClientDashboard = lazyLoad(() => import("./pages/ClientDashboard"));
+const PostProject = lazyLoad(() => import("./pages/PostProject"));
+const ManageProjects = lazyLoad(() => import("./pages/ManageProjects"));
+const ViewBids = lazyLoad(() => import("./pages/ViewBids"));
+const ClientProfile = lazyLoad(() => import("./pages/ClientProfile"));
+const ClientSettings = lazyLoad(() => import("./pages/ClientSettings"));
+const DeveloperDashboard = lazyLoad(() => import("./pages/DeveloperDashboard"));
+const FindProjects = lazyLoad(() => import("./pages/FindProjects"));
+const ManageBids = lazyLoad(() => import("./pages/ManageBids"));
+const DeveloperPortfolio = lazyLoad(() => import("./pages/DeveloperPortfolio"));
+const DeveloperSettings = lazyLoad(() => import("./pages/DeveloperSettings"));
+const DeveloperShowcase = lazyLoad(() => import("./pages/DeveloperShowcase"));
+const SignIn = lazyLoad(() => import("./pages/Auth/SignIn"));
+const SignUp = lazyLoad(() => import("./pages/Auth/SignUp"));
+const ForgotPassword = lazyLoad(() => import("./pages/Auth/ForgotPassword"));
+const EscrowPayment = lazyLoad(() => import("./pages/EscrowPayment"));
+const AdminEscrowVerification = lazyLoad(() => import("./pages/AdminEscrowVerification"));
+const AdminDashboard = lazyLoad(() => import("./pages/AdminDashboard"));
+const ProjectVerification = lazyLoad(() => import("./pages/ProjectVerification"));
+const ClientVerification = lazyLoad(() => import("./pages/ClientVerification"));
+const AuthCallback = lazyLoad(() => import("./pages/Auth/AuthCallback"));
+const ProfileManagement = lazyLoad(() => import("./pages/ProfileManagement"));
 
 // Loading fallback for lazy-loaded components
 const LazyLoadingFallback = () => (
@@ -64,14 +108,14 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <TooltipProvider>
-        <ToastProvider>
-          <NotificationProvider>
-            <Toaster />
-            <Sonner />
-            <PWAHandler />
-            <Suspense fallback={<LazyLoadingFallback />}>
+    <TooltipProvider>
+      <ToastProvider>
+        <NotificationProvider>
+          <Toaster />
+          <Sonner />
+          <PWAHandler />
+          <Suspense fallback={<LazyLoadingFallback />}>
+            <LazyErrorBoundary>
               <Routes>
                 {/* Public Pages */}
                 <Route path="/" element={<Index />} />
@@ -213,7 +257,7 @@ const App = () => (
                 
                 {/* Admin Protected Pages */}
                 <Route 
-                  path="/admin-dashboard" 
+                  path="/admin/dashboard" 
                   element={
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AdminDashboard />
@@ -221,43 +265,39 @@ const App = () => (
                   } 
                 />
                 <Route 
-                  path="/admin/project/:projectId/verification" 
+                  path="/admin/escrow-verification" 
                   element={
                     <ProtectedRoute allowedRoles={['admin']}>
                       <AdminEscrowVerification />
                     </ProtectedRoute>
                   } 
                 />
-                
-                {/* Client-side Verification Routes */}
                 <Route 
-                  path="/project/:projectId/verification/client" 
+                  path="/admin/project-verification" 
                   element={
-                    <ProtectedRoute allowedRoles={['client']}>
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <ProjectVerification />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/client-verification" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
                       <ClientVerification />
                     </ProtectedRoute>
                   } 
                 />
                 
-                {/* Developer-side Verification Routes */}
-                <Route 
-                  path="/project/:projectId/verification/developer" 
-                  element={
-                    <ProtectedRoute allowedRoles={['developer']}>
-                      <ProjectVerification />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Catch-all route */}
+                {/* 404 Page */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </Suspense>
-            <MobileNavBar />
-          </NotificationProvider>
-        </ToastProvider>
-      </TooltipProvider>
-    </BrowserRouter>
+            </LazyErrorBoundary>
+          </Suspense>
+          <MobileNavBar />
+        </NotificationProvider>
+      </ToastProvider>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 

@@ -2,11 +2,15 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Toaster, toast } from 'sonner';
 import { lazy, Suspense } from 'react'
+import { BrowserRouter } from 'react-router-dom';
 import './index.css'
 import { AuthProvider } from './hooks/useAuth';
 
-// Lazy-load the App component
-const App = lazy(() => import('./App.tsx'))
+// Lazy-load the App component with error handling
+const App = lazy(() => import('./App.tsx').catch(error => {
+  console.error('Failed to load App component:', error);
+  return { default: () => <div>Error loading application. Please refresh the page.</div> };
+}));
 
 // Show PWA install prompt when conditions match
 let deferredPrompt: any = null;
@@ -73,6 +77,8 @@ const registerServiceWorker = async () => {
         console.error('Error message:', error.message);
         console.error('Error stack:', error.stack);
       }
+      // Don't block app initialization if service worker fails
+      return null;
     }
   }
   return null;
@@ -118,33 +124,66 @@ window.addEventListener('appinstalled', () => {
 
 // Initialize the app
 const initApp = async () => {
-  // Register service worker
-  await registerServiceWorker();
-  
-  // Setup notifications after service worker is ready
-  if (isAppRegistered) {
-    await initPushNotifications();
-  }
-  
-  // Render the app with a loading fallback
-  createRoot(document.getElementById("root")!).render(
-    <AuthProvider>
-      <Suspense fallback={
+  try {
+    // Register service worker but don't wait for it
+    registerServiceWorker().catch(error => {
+      console.error('Service worker registration failed:', error);
+    });
+    
+    // Setup notifications after service worker is ready
+    if (isAppRegistered) {
+      initPushNotifications().catch(error => {
+        console.error('Push notifications setup failed:', error);
+      });
+    }
+    
+    // Render the app with a loading fallback
+    const rootElement = document.getElementById("root");
+    if (!rootElement) {
+      throw new Error('Root element not found');
+    }
+
+    createRoot(rootElement).render(
+      <BrowserRouter>
+        <AuthProvider>
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen bg-background">
+              <div className="animate-pulse flex flex-col items-center">
+                <img 
+                  src="/images/favicon-192x192.png" 
+                  alt="Loading" 
+                  className="w-16 h-16 mb-4" 
+                />
+                <p className="text-muted-foreground">Loading AI-Giggs...</p>
+              </div>
+            </div>
+          }>
+            <App />
+          </Suspense>
+        </AuthProvider>
+      </BrowserRouter>
+    );
+  } catch (error) {
+    console.error('Failed to initialize app:', error);
+    // Render error state
+    const rootElement = document.getElementById("root");
+    if (rootElement) {
+      createRoot(rootElement).render(
         <div className="flex items-center justify-center min-h-screen bg-background">
-          <div className="animate-pulse flex flex-col items-center">
-            <img 
-              src="/images/favicon-192x192.png" 
-              alt="Loading" 
-              className="w-16 h-16 mb-4" 
-            />
-            <p className="text-muted-foreground">Loading AI-Giggs...</p>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
+            <p className="text-muted-foreground mb-4">Please refresh the page or try again later.</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
+            >
+              Refresh Page
+            </button>
           </div>
         </div>
-      }>
-        <App />
-      </Suspense>
-    </AuthProvider>
-  );
+      );
+    }
+  }
 };
 
 // Start the app
