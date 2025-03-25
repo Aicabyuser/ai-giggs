@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Toaster, toast } from 'sonner';
 import { lazy, Suspense } from 'react'
 import './index.css'
+import { AuthProvider } from './hooks/useAuth';
 
 // Lazy-load the App component
 const App = lazy(() => import('./App.tsx'))
@@ -127,20 +128,22 @@ const initApp = async () => {
   
   // Render the app with a loading fallback
   createRoot(document.getElementById("root")!).render(
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-pulse flex flex-col items-center">
-          <img 
-            src="/images/favicon-192x192.png" 
-            alt="Loading" 
-            className="w-16 h-16 mb-4" 
-          />
-          <p className="text-muted-foreground">Loading AI-Giggs...</p>
+    <AuthProvider>
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen bg-background">
+          <div className="animate-pulse flex flex-col items-center">
+            <img 
+              src="/images/favicon-192x192.png" 
+              alt="Loading" 
+              className="w-16 h-16 mb-4" 
+            />
+            <p className="text-muted-foreground">Loading AI-Giggs...</p>
+          </div>
         </div>
-      </div>
-    }>
-      <App />
-    </Suspense>
+      }>
+        <App />
+      </Suspense>
+    </AuthProvider>
   );
 };
 

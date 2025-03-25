@@ -9,7 +9,6 @@ import { NotificationProvider } from "@/hooks/useNotifications";
 import MobileNavBar from "@/components/MobileNavBar";
 import PWAHandler from "@/components/PWAHandler";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { AuthProvider } from "./hooks/useAuth";
 
 // Lazy-loaded components for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -66,200 +65,198 @@ const queryClient = new QueryClient({
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <AuthProvider>
-        <TooltipProvider>
-          <ToastProvider>
-            <NotificationProvider>
-              <Toaster />
-              <Sonner />
-              <PWAHandler />
-              <Suspense fallback={<LazyLoadingFallback />}>
-                <Routes>
-                  {/* Public Pages */}
-                  <Route path="/" element={<Index />} />
-                  <Route path="/sign-in" element={<SignIn />} />
-                  <Route path="/sign-up" element={<SignUp />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/developer/:id" element={<DeveloperProfile />} />
-                  <Route path="/project/:id" element={<ProjectDetails />} />
-                  <Route path="/developer-showcase" element={<DeveloperShowcase />} />
-                  <Route path="/project-matching" element={<ProjectMatching />} />
-                  <Route path="/developer-signup" element={<DeveloperRegistration />} />
-                  
-                  {/* Common Protected Pages */}
-                  <Route 
-                    path="/dashboard" 
-                    element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/messages" 
-                    element={
-                      <ProtectedRoute>
-                        <Messages />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/profile" 
-                    element={
-                      <ProtectedRoute>
-                        <ProfileManagement />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  
-                  {/* Client-side Protected Pages */}
-                  <Route 
-                    path="/client-dashboard" 
-                    element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <ClientDashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/post-project" 
-                    element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <PostProject />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/manage-projects" 
-                    element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <ManageProjects />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/view-bids/:id" 
-                    element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <ViewBids />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/client-profile" 
-                    element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <ClientProfile />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/client-settings" 
-                    element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <ClientSettings />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/project/:id/payment" 
-                    element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <EscrowPayment />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  
-                  {/* Developer-side Protected Pages */}
-                  <Route 
-                    path="/developer-dashboard" 
-                    element={
-                      <ProtectedRoute allowedRoles={['developer']}>
-                        <DeveloperDashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/find-projects" 
-                    element={
-                      <ProtectedRoute allowedRoles={['developer']}>
-                        <FindProjects />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/manage-bids" 
-                    element={
-                      <ProtectedRoute allowedRoles={['developer']}>
-                        <ManageBids />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/developer-portfolio" 
-                    element={
-                      <ProtectedRoute allowedRoles={['developer']}>
-                        <DeveloperPortfolio />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/developer-settings" 
-                    element={
-                      <ProtectedRoute allowedRoles={['developer']}>
-                        <DeveloperSettings />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  
-                  {/* Admin Protected Pages */}
-                  <Route 
-                    path="/admin-dashboard" 
-                    element={
-                      <ProtectedRoute allowedRoles={['admin']}>
-                        <AdminDashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/admin/project/:projectId/verification" 
-                    element={
-                      <ProtectedRoute allowedRoles={['admin']}>
-                        <AdminEscrowVerification />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  
-                  {/* Client-side Verification Routes */}
-                  <Route 
-                    path="/project/:projectId/verification/client" 
-                    element={
-                      <ProtectedRoute allowedRoles={['client']}>
-                        <ClientVerification />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  
-                  {/* Developer-side Verification Routes */}
-                  <Route 
-                    path="/project/:projectId/verification/developer" 
-                    element={
-                      <ProtectedRoute allowedRoles={['developer']}>
-                        <ProjectVerification />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  
-                  {/* Catch-all route */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-              <MobileNavBar />
-            </NotificationProvider>
-          </ToastProvider>
-        </TooltipProvider>
-      </AuthProvider>
+      <TooltipProvider>
+        <ToastProvider>
+          <NotificationProvider>
+            <Toaster />
+            <Sonner />
+            <PWAHandler />
+            <Suspense fallback={<LazyLoadingFallback />}>
+              <Routes>
+                {/* Public Pages */}
+                <Route path="/" element={<Index />} />
+                <Route path="/sign-in" element={<SignIn />} />
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/developer/:id" element={<DeveloperProfile />} />
+                <Route path="/project/:id" element={<ProjectDetails />} />
+                <Route path="/developer-showcase" element={<DeveloperShowcase />} />
+                <Route path="/project-matching" element={<ProjectMatching />} />
+                <Route path="/developer-signup" element={<DeveloperRegistration />} />
+                
+                {/* Common Protected Pages */}
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/messages" 
+                  element={
+                    <ProtectedRoute>
+                      <Messages />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/profile" 
+                  element={
+                    <ProtectedRoute>
+                      <ProfileManagement />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Client-side Protected Pages */}
+                <Route 
+                  path="/client-dashboard" 
+                  element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <ClientDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/post-project" 
+                  element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <PostProject />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/manage-projects" 
+                  element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <ManageProjects />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/view-bids/:id" 
+                  element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <ViewBids />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/client-profile" 
+                  element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <ClientProfile />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/client-settings" 
+                  element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <ClientSettings />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/project/:id/payment" 
+                  element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <EscrowPayment />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Developer-side Protected Pages */}
+                <Route 
+                  path="/developer-dashboard" 
+                  element={
+                    <ProtectedRoute allowedRoles={['developer']}>
+                      <DeveloperDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/find-projects" 
+                  element={
+                    <ProtectedRoute allowedRoles={['developer']}>
+                      <FindProjects />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/manage-bids" 
+                  element={
+                    <ProtectedRoute allowedRoles={['developer']}>
+                      <ManageBids />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/developer-portfolio" 
+                  element={
+                    <ProtectedRoute allowedRoles={['developer']}>
+                      <DeveloperPortfolio />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/developer-settings" 
+                  element={
+                    <ProtectedRoute allowedRoles={['developer']}>
+                      <DeveloperSettings />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Admin Protected Pages */}
+                <Route 
+                  path="/admin-dashboard" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/project/:projectId/verification" 
+                  element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <AdminEscrowVerification />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Client-side Verification Routes */}
+                <Route 
+                  path="/project/:projectId/verification/client" 
+                  element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <ClientVerification />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Developer-side Verification Routes */}
+                <Route 
+                  path="/project/:projectId/verification/developer" 
+                  element={
+                    <ProtectedRoute allowedRoles={['developer']}>
+                      <ProjectVerification />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Catch-all route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+            <MobileNavBar />
+          </NotificationProvider>
+        </ToastProvider>
+      </TooltipProvider>
     </BrowserRouter>
   </QueryClientProvider>
 );
