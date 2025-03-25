@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Toaster, toast } from 'sonner';
 import { lazy, Suspense } from 'react'
 import { BrowserRouter } from 'react-router-dom';
+import { ToastProvider } from '@/hooks/use-toast';
 import './index.css'
 import { AuthProvider } from './hooks/useAuth';
 
@@ -145,22 +146,24 @@ const initApp = async () => {
 
     createRoot(rootElement).render(
       <BrowserRouter>
-        <AuthProvider>
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-screen bg-background">
-              <div className="animate-pulse flex flex-col items-center">
-                <img 
-                  src="/images/favicon-192x192.png" 
-                  alt="Loading" 
-                  className="w-16 h-16 mb-4" 
-                />
-                <p className="text-muted-foreground">Loading AI-Giggs...</p>
+        <ToastProvider>
+          <AuthProvider>
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-screen bg-background">
+                <div className="animate-pulse flex flex-col items-center">
+                  <img 
+                    src="/images/favicon-192x192.png" 
+                    alt="Loading" 
+                    className="w-16 h-16 mb-4" 
+                  />
+                  <p className="text-muted-foreground">Loading AI-Giggs...</p>
+                </div>
               </div>
-            </div>
-          }>
-            <App />
-          </Suspense>
-        </AuthProvider>
+            }>
+              <App />
+            </Suspense>
+          </AuthProvider>
+        </ToastProvider>
       </BrowserRouter>
     );
   } catch (error) {
