@@ -65,13 +65,13 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <ToastProvider>
-        <NotificationProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
+          <ToastProvider>
+            <NotificationProvider>
+              <Toaster />
+              <Sonner />
               <PWAHandler />
               <Suspense fallback={<LazyLoadingFallback />}>
                 <Routes>
@@ -256,11 +256,11 @@ const App = () => (
                 </Routes>
               </Suspense>
               <MobileNavBar />
-            </AuthProvider>
-          </BrowserRouter>
-        </NotificationProvider>
-      </ToastProvider>
-    </TooltipProvider>
+            </NotificationProvider>
+          </ToastProvider>
+        </TooltipProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 

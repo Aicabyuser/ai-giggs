@@ -11,14 +11,22 @@ export const PWAHandler: React.FC = () => {
   const { loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Hide splash screen after 2 seconds or when auth is ready
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2000);
+    // Only start the timer if auth is not loading
+    if (!authLoading) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 2000);
 
+      return () => clearTimeout(timer);
+    }
+  }, [authLoading]);
+
+  useEffect(() => {
     // Listen for service worker updates
     const handleServiceWorkerUpdate = (event: MessageEvent) => {
-      const { type, version } = event.data || {};
+      if (!event.data) return;
+      
+      const { type, version } = event.data;
       
       if (type === 'APP_UPDATED') {
         setUpdateAvailable(true);
@@ -42,7 +50,6 @@ export const PWAHandler: React.FC = () => {
     navigator.serviceWorker?.addEventListener('message', handleServiceWorkerUpdate);
 
     return () => {
-      clearTimeout(timer);
       navigator.serviceWorker?.removeEventListener('message', handleServiceWorkerUpdate);
     };
   }, [toast]);
