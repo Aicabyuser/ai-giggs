@@ -1,3 +1,4 @@
+import { Developer, Project } from '@/types/models';
 
 export interface ProjectSearchParams {
   searchTerm?: string;
@@ -9,12 +10,14 @@ export interface ProjectSearchParams {
 export interface DeveloperSearchParams {
   searchTerm?: string;
   skills?: string[];
-  experience?: string[];
+  experienceLevel?: [number, number];
   hourlyRate?: [number, number];
+  availability?: string;
+  minRating?: number;
 }
 
 // Project search functionality
-export const filterProjects = (projects: any[], filters: ProjectSearchParams) => {
+export const filterProjects = (projects: Project[], filters: ProjectSearchParams): Project[] => {
   return projects.filter(project => {
     // Filter by search term
     if (filters.searchTerm && !project.title.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
@@ -28,8 +31,7 @@ export const filterProjects = (projects: any[], filters: ProjectSearchParams) =>
     
     // Filter by skills
     if (filters.skills && filters.skills.length > 0) {
-      const projectSkills = project.skills || [];
-      if (!filters.skills.some(skill => projectSkills.includes(skill))) {
+      if (!filters.skills.some(skill => project.skills.includes(skill))) {
         return false;
       }
     }
@@ -46,7 +48,7 @@ export const filterProjects = (projects: any[], filters: ProjectSearchParams) =>
 };
 
 // Developer search functionality
-export const filterDevelopers = (developers: any[], filters: DeveloperSearchParams) => {
+export const filterDevelopers = (developers: Developer[], filters: DeveloperSearchParams): Developer[] => {
   return developers.filter(developer => {
     // Filter by search term
     if (filters.searchTerm && 
@@ -57,23 +59,34 @@ export const filterDevelopers = (developers: any[], filters: DeveloperSearchPara
     
     // Filter by skills
     if (filters.skills && filters.skills.length > 0) {
-      const developerSkills = developer.skills || [];
-      if (!filters.skills.some(skill => developerSkills.includes(skill))) {
+      if (!filters.skills.some(skill => developer.skills.includes(skill))) {
         return false;
       }
     }
     
-    // Filter by experience level
-    if (filters.experience && filters.experience.length > 0) {
-      if (!filters.experience.includes(developer.experienceLevel)) {
+    // Filter by experience level range
+    if (filters.experienceLevel) {
+      const [min, max] = filters.experienceLevel;
+      if (developer.experienceLevel < min || developer.experienceLevel > max) {
         return false;
       }
     }
     
-    // Filter by hourly rate
-    if (filters.hourlyRate && 
-        (developer.hourlyRate < filters.hourlyRate[0] || 
-         developer.hourlyRate > filters.hourlyRate[1])) {
+    // Filter by hourly rate range
+    if (filters.hourlyRate) {
+      const [min, max] = filters.hourlyRate;
+      if (developer.hourlyRate < min || developer.hourlyRate > max) {
+        return false;
+      }
+    }
+
+    // Filter by availability
+    if (filters.availability && developer.availability !== filters.availability) {
+      return false;
+    }
+
+    // Filter by minimum rating
+    if (filters.minRating && developer.rating < filters.minRating) {
       return false;
     }
     

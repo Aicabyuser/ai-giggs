@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const CallToAction = () => {
   return (
-    <section className="py-24 bg-secondary">
+    <section className="py-24 bg-primary/5">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-medium mb-6 inline-block">

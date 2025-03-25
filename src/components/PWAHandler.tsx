@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 export const PWAHandler: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const { toast } = useToast();
+  const { loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Hide splash screen after 2 seconds
+    // Hide splash screen after 2 seconds or when auth is ready
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 2000);
@@ -45,7 +47,8 @@ export const PWAHandler: React.FC = () => {
     };
   }, [toast]);
 
-  if (!showSplash) return null;
+  // Don't show splash screen if auth is still loading
+  if (authLoading || !showSplash) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background">

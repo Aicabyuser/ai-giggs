@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { SendHorizontal, Mic, ArrowRight } from 'lucide-react';
@@ -51,7 +50,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col py-20">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/5">
       <div className="container mx-auto px-4 flex flex-col items-center text-center mb-12 mt-12 md:mt-16">
         <div className="relative inline-block mb-3">
           <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-medium">
@@ -85,7 +84,7 @@ const Hero = () => {
       </div>
       
       <div className="container mx-auto px-4 max-w-4xl animate-fade-in" style={{animationDelay: '0.3s'}}>
-        <div className="glass rounded-2xl p-3 md:p-6 shadow-lg border border-border/50">
+        <div className="glass rounded-2xl p-3 md:p-6 shadow-lg border border-border/50 bg-background/80 backdrop-blur-sm">
           <div className="h-[400px] overflow-y-auto p-4 space-y-4 mb-4">
             {conversation.map((msg, index) => (
               <div 

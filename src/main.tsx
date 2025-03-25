@@ -1,6 +1,8 @@
-import { createRoot } from 'react-dom/client'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { Toaster, toast } from 'sonner';
 import { lazy, Suspense } from 'react'
-import { toast } from '@/hooks/use-toast'
 import './index.css'
 
 // Lazy-load the App component
@@ -37,7 +39,9 @@ const initPushNotifications = async () => {
 const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
     try {
-      const registration = await navigator.serviceWorker.register('/service-worker.js');
+      const registration = await navigator.serviceWorker.register('/service-worker.js', {
+        scope: '/'
+      });
       console.log('Service Worker registered with scope:', registration.scope);
       isAppRegistered = true;
       
@@ -49,17 +53,12 @@ const registerServiceWorker = async () => {
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             // New version available
-            toast({
-              title: "App Update Available",
-              description: "A new version is available. Refresh to update.",
-              action: (
-                <button 
-                  onClick={() => window.location.reload()}
-                  className="bg-primary text-white px-2 py-1 rounded text-xs"
-                >
-                  Update
-                </button>
-              ),
+            toast('App Update Available', {
+              description: 'A new version is available. Refresh to update.',
+              action: {
+                label: 'Update',
+                onClick: () => window.location.reload()
+              }
             });
           }
         });
@@ -68,6 +67,12 @@ const registerServiceWorker = async () => {
       return registration;
     } catch (error) {
       console.error('Service Worker registration failed:', error);
+      // Log additional details about the error
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
     }
   }
   return null;
@@ -75,58 +80,39 @@ const registerServiceWorker = async () => {
 
 // Handle beforeinstallprompt event for PWA installation
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
   e.preventDefault();
-  // Stash the event so it can be triggered later
   deferredPrompt = e;
+  isAppRegistered = true;
   
-  // Update UI to notify the user they can add to home screen
-  const installButton = document.createElement('button');
-  installButton.id = 'install-button';
-  installButton.textContent = 'Install App';
-  installButton.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-primary text-white px-4 py-2 rounded-full shadow-lg z-50';
-  installButton.style.display = 'none';
-  
-  document.body.appendChild(installButton);
-  
-  // Wait a few seconds before showing the install button
-  setTimeout(() => {
-    installButton.style.display = 'block';
-  }, 5000);
-  
-  installButton.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    
-    // Show the install prompt
-    deferredPrompt.prompt();
-    
-    // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response to the install prompt: ${outcome}`);
-    
-    // We've used the prompt, and can't use it again, throw it away
-    deferredPrompt = null;
-    
-    // Hide the install button
-    installButton.style.display = 'none';
+  // Show install prompt
+  toast('Install AI-Giggs', {
+    description: 'Install AI-Giggs for a better experience',
+    action: {
+      label: 'Install',
+      onClick: () => {
+        deferredPrompt?.prompt();
+        deferredPrompt?.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+        });
+      }
+    }
   });
 });
 
-// Add listener for when the PWA was successfully installed
+// Handle appinstalled event
 window.addEventListener('appinstalled', () => {
-  console.log('PWA was installed');
+  // Clear the deferredPrompt so it can be garbage collected
   deferredPrompt = null;
+  isAppRegistered = true;
   
-  // Remove the install button if it exists
-  const installButton = document.getElementById('install-button');
-  if (installButton) {
-    installButton.remove();
-  }
-  
-  // Show a success toast
-  toast({
-    title: "Installation Complete",
-    description: "App has been successfully installed!",
+  // Show success message
+  toast('App Installed', {
+    description: 'AI-Giggs has been installed successfully',
+    duration: 3000
   });
 });
 

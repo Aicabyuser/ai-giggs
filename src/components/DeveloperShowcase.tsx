@@ -105,28 +105,29 @@ const DeveloperShowcase = () => {
   return (
     <section id="developer-showcase" className="py-24 bg-background">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16">
-          <div className="mb-6 md:mb-0">
-            <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-medium mb-4 inline-block">
-              Our Developers
-            </span>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">
-              Meet Top AI Talent
-            </h2>
-            <p className="text-muted-foreground max-w-2xl">
-              We've vetted and verified the skills of every developer on our platform
-              to ensure you get high-quality expertise for your project.
-            </p>
-          </div>
-          <Button className="flex items-center gap-2">
-            Browse All Developers <ArrowRight className="h-4 w-4" />
-          </Button>
+        <div className="text-center mb-16">
+          <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+            Featured Developers
+          </span>
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+            Meet Our Top AI Developers
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Discover talented AI developers who have successfully delivered exceptional projects.
+          </p>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {developers.map((dev, index) => (
-            <DeveloperCard key={index} {...dev} />
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          {developers.map((developer, index) => (
+            <DeveloperCard key={index} {...developer} />
           ))}
+        </div>
+        
+        <div className="text-center mt-12">
+          <Button variant="outline" className="rounded-full">
+            View All Developers
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         </div>
       </div>
     </section>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -16,8 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { Github, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/Header';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const schema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -28,7 +30,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const SignIn = () => {
-  const { signIn, loading } = useAuth();
+  const { signIn, loading, signInWithProvider } = useAuth();
+  const [error, setError] = React.useState<string | null>(null);
   
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -40,7 +43,21 @@ const SignIn = () => {
   });
   
   const onSubmit = async (data: FormData) => {
-    await signIn(data.email, data.password);
+    try {
+      setError(null);
+      await signIn(data.email, data.password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in');
+    }
+  };
+
+  const handleSocialSignIn = async (provider: 'github' | 'google') => {
+    try {
+      setError(null);
+      await signInWithProvider(provider);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : `Failed to sign in with ${provider}`);
+    }
   };
   
   return (
@@ -64,72 +81,130 @@ const SignIn = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="you@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
+              <div className="grid gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <Button 
+                    variant="outline" 
+                    type="button"
+                    disabled={loading}
+                    onClick={() => handleSocialSignIn('github')}
+                    className="w-full"
+                  >
+                    {loading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Github className="mr-2 h-4 w-4" />
                     )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                    GitHub
+                  </Button>
+
+                  <Button 
+                    variant="outline" 
+                    type="button"
+                    disabled={loading}
+                    onClick={() => handleSocialSignIn('google')}
+                    className="w-full"
+                  >
+                    {loading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <img src="/images/google.svg" alt="Google" className="mr-2 h-4 w-4" />
                     )}
-                  />
-                  
-                  <div className="flex items-center justify-between">
+                    Google
+                  </Button>
+                </div>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                       control={form.control}
-                      name="rememberMe"
+                      name="email"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Checkbox 
-                              checked={field.value} 
-                              onCheckedChange={field.onChange} 
-                            />
+                            <Input placeholder="you@example.com" {...field} />
                           </FormControl>
-                          <FormLabel className="text-sm font-normal cursor-pointer">
-                            Remember me
-                          </FormLabel>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                     
-                    <Link 
-                      to="/forgot-password"
-                      className="text-sm text-primary hover:underline"
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="••••••••" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="flex items-center justify-between">
+                      <FormField
+                        control={form.control}
+                        name="rememberMe"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <Checkbox 
+                                checked={field.value} 
+                                onCheckedChange={field.onChange} 
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal cursor-pointer">
+                              Remember me
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Link 
+                        to="/forgot-password"
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      disabled={loading}
                     >
-                      Forgot password?
-                    </Link>
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={loading}
-                  >
-                    {loading ? "Signing in..." : "Sign In"}
-                  </Button>
-                </form>
-              </Form>
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Signing in...
+                        </>
+                      ) : (
+                        "Sign In"
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </div>
             </CardContent>
             <CardFooter className="flex justify-center">
               <p className="text-sm text-muted-foreground">

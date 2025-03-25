@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -41,6 +40,8 @@ const AdminEscrowVerification = lazy(() => import("./pages/AdminEscrowVerificati
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const ProjectVerification = lazy(() => import("./pages/ProjectVerification"));
 const ClientVerification = lazy(() => import("./pages/ClientVerification"));
+const AuthCallback = lazy(() => import("./pages/Auth/AuthCallback"));
+const ProfileManagement = lazy(() => import("./pages/ProfileManagement"));
 
 // Loading fallback for lazy-loaded components
 const LazyLoadingFallback = () => (
@@ -79,6 +80,7 @@ const App = () => (
                   <Route path="/sign-in" element={<SignIn />} />
                   <Route path="/sign-up" element={<SignUp />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
                   <Route path="/developer/:id" element={<DeveloperProfile />} />
                   <Route path="/project/:id" element={<ProjectDetails />} />
                   <Route path="/developer-showcase" element={<DeveloperShowcase />} />
@@ -99,6 +101,14 @@ const App = () => (
                     element={
                       <ProtectedRoute>
                         <Messages />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/profile" 
+                    element={
+                      <ProtectedRoute>
+                        <ProfileManagement />
                       </ProtectedRoute>
                     } 
                   />

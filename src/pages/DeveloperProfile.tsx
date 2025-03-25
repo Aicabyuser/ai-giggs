@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, Star, Briefcase, Calendar, MessageSquare, Award, Code, Clock, CheckCircle } from 'lucide-react';
@@ -9,26 +8,30 @@ import { useToast } from "@/components/ui/use-toast";
 import Header from '@/components/Header';
 import type { Developer } from '@/hooks/useAIChat';
 import { mockDevelopers } from '@/hooks/useAIChat';
+import { useDeveloper } from '@/hooks/useDeveloper';
+import { DeveloperProfile as DeveloperProfileType } from '@/types/developer';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/hooks/useAuth';
 
 const DeveloperProfile = () => {
   const { id } = useParams();
-  const [developer, setDeveloper] = useState<Developer | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const { toast } = useToast();
-  
+  const { getDeveloperProfile, loading } = useDeveloper();
+  const [profile, setProfile] = useState<DeveloperProfileType | null>(null);
+  const isOwnProfile = user?.id === id;
+
   useEffect(() => {
-    // In a real app, we would fetch from an API
-    // For now, we'll use the mock data
-    const developerId = parseInt(id || '0');
-    const foundDeveloper = mockDevelopers.find(dev => dev.id === developerId);
-    
-    // Simulate API loading
-    setTimeout(() => {
-      setDeveloper(foundDeveloper || null);
-      setLoading(false);
-    }, 500);
-  }, [id]);
-  
+    const loadProfile = async () => {
+      if (!id) return;
+      const data = await getDeveloperProfile(id);
+      setProfile(data);
+    };
+    loadProfile();
+  }, [id, getDeveloperProfile]);
+
   const handleContactDeveloper = () => {
     toast({
       title: "Message Sent",
@@ -36,7 +39,7 @@ const DeveloperProfile = () => {
     });
   };
   
-  if (loading) {
+  if (loading || !profile) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-secondary/10">
         <Header />
@@ -52,34 +55,20 @@ const DeveloperProfile = () => {
     );
   }
   
-  if (!developer) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-secondary/10">
-        <Header />
-        <div className="container mx-auto px-4 py-20">
-          <div className="flex items-center mb-8 pt-8">
-            <Link to="/project-matching" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ChevronLeft className="h-4 w-4" />
-              Back to Matches
-            </Link>
-          </div>
-          
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              Developer Not Found
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-              The developer profile you're looking for doesn't exist or has been removed.
-            </p>
-            <Button asChild>
-              <Link to="/project-matching">Find Developers</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  
+  const renderRating = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.push(<Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />);
+      } else if (i - 0.5 <= rating) {
+        stars.push(<Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />);
+      } else {
+        stars.push(<Star key={i} className="h-4 w-4 text-gray-300" />);
+      }
+    }
+    return stars;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/10">
       <Header />
@@ -101,18 +90,30 @@ const DeveloperProfile = () => {
                   <div className="flex flex-col items-center text-center">
                     <div className="h-32 w-32 rounded-full overflow-hidden border border-border mb-4">
                       <img 
-                        src={developer?.avatar} 
-                        alt={developer?.name} 
+                        src={profile?.avatar_url} 
+                        alt={profile?.full_name} 
                         className="h-full w-full object-cover"
                       />
                     </div>
                     
-                    <h1 className="font-display text-2xl font-semibold">{developer?.name}</h1>
-                    <p className="text-muted-foreground mb-3">{developer?.title}</p>
+                    <h1 className="font-display text-2xl font-semibold">{profile?.full_name}</h1>
+                    <p className="text-muted-foreground mb-3">{profile?.bio}</p>
                     
                     <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
-                      <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                      <span>{developer?.rating}/5 ({Math.floor((developer?.projectsCompleted || 0) * 1.5)} reviews)</span>
+                      <div className="flex items-center">
+                        {renderRating(profile?.average_rating || 0)}
+                      </div>
+                      <span>({profile?.total_reviews} reviews)</span>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <Badge variant="secondary">{profile?.location}</Badge>
+                      <Badge variant="secondary">
+                        {profile?.availability.is_available ? 'Available' : 'Not Available'}
+                      </Badge>
+                      <Badge variant="secondary">
+                        {profile?.availability.available_hours}h/week
+                      </Badge>
                     </div>
                     
                     <Button 
@@ -146,7 +147,7 @@ const DeveloperProfile = () => {
                         <span className="text-sm text-muted-foreground flex items-center gap-2">
                           <Briefcase className="h-4 w-4" /> Projects
                         </span>
-                        <span className="font-medium">{developer?.projectsCompleted}</span>
+                        <span className="font-medium">{profile?.completed_projects}</span>
                       </div>
                       
                       <div className="flex justify-between items-center">
@@ -175,9 +176,9 @@ const DeveloperProfile = () => {
                   <div className="border-t border-border mt-6 pt-6">
                     <h3 className="font-semibold mb-3">Skills</h3>
                     <div className="flex flex-wrap gap-2">
-                      {developer?.skills.map((skill, i) => (
+                      {profile?.skills.map(({ skill, proficiency_level }) => (
                         <span 
-                          key={i} 
+                          key={skill.id} 
                           className="bg-secondary/50 px-2 py-1 rounded-full text-xs"
                         >
                           {skill.name}
@@ -197,11 +198,11 @@ const DeveloperProfile = () => {
             <div className="md:col-span-2">
               <Card className="mb-6">
                 <CardContent className="p-6">
-                  <h2 className="font-display text-xl font-semibold mb-4">About {developer?.name}</h2>
+                  <h2 className="font-display text-xl font-semibold mb-4">About {profile?.full_name}</h2>
                   <p className="text-muted-foreground mb-4">
-                    As an experienced {developer?.title}, I've spent the last 5 years building cutting-edge AI solutions 
+                    As an experienced {profile?.bio}, I've spent the last 5 years building cutting-edge AI solutions 
                     for clients across healthcare, fintech, and e-commerce sectors. My expertise in 
-                    {developer?.skills.map(skill => skill.name).join(', ')} allows me to develop robust, scalable AI systems that deliver measurable business impact.
+                    {profile?.skills.map(({ skill }) => skill.name).join(', ')} allows me to develop robust, scalable AI systems that deliver measurable business impact.
                   </p>
                   <p className="text-muted-foreground">
                     I believe in creating AI that's not just powerful, but also ethical and user-friendly. 
@@ -277,35 +278,22 @@ const DeveloperProfile = () => {
                     <CardContent className="p-6">
                       <h3 className="font-semibold mb-4">Client Reviews</h3>
                       <div className="space-y-6">
-                        {[1, 2, 3].map((index) => (
-                          <div key={index} className="border-b border-border pb-6 last:border-0 last:pb-0">
+                        {profile?.reviews.map((review) => (
+                          <div key={review.id} className="border-b border-border pb-6 last:border-0 last:pb-0">
                             <div className="flex items-center mb-3">
                               <div className="flex mr-2">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star key={star} className={`h-4 w-4 ${star <= 5-(index-1)/2 ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`} />
-                                ))}
+                                {renderRating(review.rating)}
                               </div>
                               <span className="text-sm font-medium">
-                                {index === 1 && "Excellent work!"}
-                                {index === 2 && "Great expertise and communication"}
-                                {index === 3 && "Delivered on time and on budget"}
+                                {review.comment}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {index === 1 && "Went above and beyond our expectations. The AI solution dramatically improved our conversion rates and customer retention."}
-                              {index === 2 && "Very knowledgeable and kept us updated throughout the project. Made complex concepts easy to understand."}
-                              {index === 3 && "Professional and efficient. Would definitely work with them again on future AI projects."}
-                            </p>
                             <div className="flex justify-between">
                               <span className="text-xs text-muted-foreground">
-                                {index === 1 && "Sarah J., CTO at TechRetail"}
-                                {index === 2 && "Michael B., Product Manager"}
-                                {index === 3 && "Elena K., Startup Founder"}
+                                by {review.reviewer?.full_name}
                               </span>
                               <span className="text-xs text-muted-foreground">
-                                {index === 1 && "2 months ago"}
-                                {index === 2 && "4 months ago"}
-                                {index === 3 && "7 months ago"}
+                                {new Date(review.created_at).toLocaleDateString()}
                               </span>
                             </div>
                           </div>

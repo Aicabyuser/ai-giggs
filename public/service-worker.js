@@ -65,6 +65,11 @@ const apiRoutes = ['/api', 'https://api.ai-giggs.com'];
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
+  // Skip caching for unsupported URL schemes
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    return;
+  }
+  
   // Network first for API requests
   if (apiRoutes.some(route => url.href.includes(route))) {
     event.respondWith(

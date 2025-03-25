@@ -118,36 +118,44 @@ const UseCases = () => {
   };
 
   return (
-    <section id="use-cases" className="py-24 bg-secondary">
+    <section id="use-cases" className="py-24 bg-secondary/5">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-medium mb-4 inline-block">
-            Success Stories
+            Project Examples
           </span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            Real-World AI Solutions
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+            Popular AI Project Types
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Explore successful AI projects we've helped bring to life through our developer matching platform.
+            Explore common AI project types and get an idea of costs and timelines.
           </p>
         </div>
         
-        <Tabs defaultValue="ml" className="max-w-5xl mx-auto">
+        <Tabs defaultValue="ml" className="max-w-6xl mx-auto">
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="ml">Machine Learning</TabsTrigger>
-            <TabsTrigger value="nlp">NLP Projects</TabsTrigger>
+            <TabsTrigger value="nlp">Natural Language</TabsTrigger>
             <TabsTrigger value="financial">Financial AI</TabsTrigger>
           </TabsList>
           
-          {Object.entries(useCases).map(([category, cases]) => (
-            <TabsContent key={category} value={category} className="mt-0">
-              <div className="grid md:grid-cols-2 gap-6">
-                {cases.map((useCase, index) => (
-                  <UseCase key={index} {...useCase} />
-                ))}
-              </div>
-            </TabsContent>
-          ))}
+          <TabsContent value="ml" className="grid md:grid-cols-2 gap-6">
+            {useCases.ml.map((useCase, index) => (
+              <UseCase key={index} {...useCase} />
+            ))}
+          </TabsContent>
+          
+          <TabsContent value="nlp" className="grid md:grid-cols-2 gap-6">
+            {useCases.nlp.map((useCase, index) => (
+              <UseCase key={index} {...useCase} />
+            ))}
+          </TabsContent>
+          
+          <TabsContent value="financial" className="grid md:grid-cols-2 gap-6">
+            {useCases.financial.map((useCase, index) => (
+              <UseCase key={index} {...useCase} />
+            ))}
+          </TabsContent>
         </Tabs>
       </div>
     </section>

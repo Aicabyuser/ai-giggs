@@ -25,7 +25,7 @@ const Step = ({ number, title, description, icon }: StepProps) => (
 
 const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-24 bg-secondary">
+    <section id="how-it-works" className="py-24 bg-secondary/10">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <span className="bg-primary/10 text-primary px-4 py-1 rounded-full text-sm font-medium mb-4 inline-block">
