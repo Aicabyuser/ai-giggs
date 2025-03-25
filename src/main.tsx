@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ToastProvider } from '@/hooks/use-toast';
 import './index.css'
 import { AuthProvider } from './hooks/useAuth';
+import PWAHandler from '@/components/PWAHandler';
 
 // Lazy-load the App component with error handling
 const App = lazy(() => import('./App.tsx').catch(error => {
@@ -143,6 +144,11 @@ const initApp = async () => {
     if (!rootElement) {
       throw new Error('Root element not found');
     }
+    
+    const App = lazy(() => import('./App.tsx').catch(error => {
+      console.error('Failed to load App component:', error);
+      return { default: () => <div>Error loading application. Please refresh the page.</div> };
+    }));
 
     createRoot(rootElement).render(
       <BrowserRouter>
@@ -162,6 +168,7 @@ const initApp = async () => {
             }>
               <App />
             </Suspense>
+            <PWAHandler />
           </AuthProvider>
         </ToastProvider>
       </BrowserRouter>

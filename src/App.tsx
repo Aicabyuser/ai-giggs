@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route } from "react-router-dom";
 import { NotificationProvider } from "@/hooks/useNotifications";
 import MobileNavBar from "@/components/MobileNavBar";
-import PWAHandler from "@/components/PWAHandler";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Error boundary for lazy-loaded components
@@ -111,7 +110,6 @@ const App = () => (
       <NotificationProvider>
         <Toaster />
         <Sonner />
-        <PWAHandler />
         <Suspense fallback={<LazyLoadingFallback />}>
           <LazyErrorBoundary>
             <Routes>
