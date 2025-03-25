@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, AuthError, Provider } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
-import { useToast } from '@/components/ui/use-toast';
 
 interface AuthState {
   user: User | null;
@@ -27,13 +26,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session: null,
     loading: true,
   });
-  const { toast } = useToast();
 
   useEffect(() => {
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setState(prev => ({ ...prev, session, user: session?.user ?? null }));
-      setLoading(false);
+      setState(prev => ({ ...prev, session, user: session?.user ?? null, loading: false }));
     });
 
     // Listen for changes in auth state
@@ -51,11 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const handleError = (error: AuthError) => {
-    toast({
-      title: "Error",
-      description: error.message,
-      variant: "destructive",
-    });
+    console.error('Auth error:', error.message);
   };
 
   const signUp = async (email: string, password: string, metadata?: { full_name: string; role: string }) => {
@@ -69,12 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       });
       if (error) throw error;
-      toast({
-        title: "Success",
-        description: "Please check your email to verify your account.",
-      });
     } catch (error) {
       handleError(error as AuthError);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -85,10 +75,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      toast({
-        title: "Welcome Back",
-        description: "You have successfully signed in.",
-      });
     } catch (error) {
       handleError(error as AuthError);
       throw error;
@@ -120,10 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      toast({
-        title: "Signed Out",
-        description: "You have been successfully signed out.",
-      });
     } catch (error) {
       handleError(error as AuthError);
       throw error;
@@ -137,10 +119,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email);
       if (error) throw error;
-      toast({
-        title: "Password Reset",
-        description: "Please check your email for password reset instructions.",
-      });
     } catch (error) {
       handleError(error as AuthError);
       throw error;
@@ -156,10 +134,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: data,
       });
       if (error) throw error;
-      toast({
-        title: "Success",
-        description: "Profile updated successfully.",
-      });
     } catch (error) {
       handleError(error as AuthError);
       throw error;
@@ -175,10 +149,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password: newPassword,
       });
       if (error) throw error;
-      toast({
-        title: "Password Updated",
-        description: "Your password has been updated successfully.",
-      });
     } catch (error) {
       handleError(error as AuthError);
       throw error;

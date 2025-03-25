@@ -144,11 +144,6 @@ const initApp = async () => {
     if (!rootElement) {
       throw new Error('Root element not found');
     }
-    
-    const App = lazy(() => import('./App.tsx').catch(error => {
-      console.error('Failed to load App component:', error);
-      return { default: () => <div>Error loading application. Please refresh the page.</div> };
-    }));
 
     createRoot(rootElement).render(
       <BrowserRouter>
@@ -168,7 +163,9 @@ const initApp = async () => {
             }>
               <App />
             </Suspense>
-            <PWAHandler />
+            <Suspense>
+              <PWAHandler />
+            </Suspense>
           </AuthProvider>
         </ToastProvider>
       </BrowserRouter>
