@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>AI-Giggs | Find Your Perfect AI Developer</title>
+    <meta name="description" content="AI-Giggs connects clients with AI developers through intelligent matchmaking. Find the perfect AI developer for your project." />
+    <meta name="author" content="AI-Giggs" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#62BC7C" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AI-Giggs" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="AI-Giggs | Find Your Perfect AI Developer" />
+    <meta property="og:description" content="AI-Giggs connects clients with AI developers through intelligent matchmaking. Find the perfect AI developer for your project." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/og-image.png" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@aigiggs" />
+    <meta name="twitter:image" content="/images/og-image.png" />
+    
+    <!-- PWA Manifest and Icons -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#62BC7C" />
+    <meta name="msapplication-TileColor" content="#62BC7C" />
+    <meta name="theme-color" content="#62BC7C" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Prevent tap highlight on iOS -->
+    <style>
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+      html, body {
+        overscroll-behavior: none;
+        height: 100%;
+        position: fixed;
+        overflow: hidden;
+        width: 100%;
+        touch-action: manipulation;
+      }
+      #root {
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Register Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(error => {
+              console.log('Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
