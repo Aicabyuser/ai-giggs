@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from '@/components/ui/use-toast';
+import { PaymentMethods } from '@/components/payments/PaymentMethods';
 
 const DeveloperSettings = () => {
   const { toast } = useToast();
@@ -220,10 +220,7 @@ const DeveloperSettings = () => {
               <CardDescription>Manage your payment methods and payout preferences</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Billing information section under development.</p>
-                <Button className="mt-4">Add Payment Method</Button>
-              </div>
+              <PaymentMethods />
             </CardContent>
           </Card>
         </TabsContent>
