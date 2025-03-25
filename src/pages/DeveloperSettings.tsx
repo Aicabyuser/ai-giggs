@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from '@/components/ui/use-toast';
 import { PaymentMethods } from '@/components/payments/PaymentMethods';
+import { SecuritySettings } from '@/components/security/SecuritySettings';
 
 const DeveloperSettings = () => {
   const { toast } = useToast();
@@ -232,10 +233,7 @@ const DeveloperSettings = () => {
               <CardDescription>Manage your account security and authentication options</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Security settings section under development.</p>
-                <Button className="mt-4">Change Password</Button>
-              </div>
+              <SecuritySettings />
             </CardContent>
           </Card>
         </TabsContent>

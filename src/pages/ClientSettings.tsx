@@ -20,6 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { z } from 'zod';
 import { useNotifications } from '@/hooks/useNotifications';
 import { PaymentMethods } from '@/components/payments/PaymentMethods';
+import { SecuritySettings } from '@/components/security/SecuritySettings';
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -454,10 +455,7 @@ const ClientSettings = () => {
               <CardDescription>Manage your account security and authentication options</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Security settings section under development.</p>
-                <Button className="mt-4">Change Password</Button>
-              </div>
+              <SecuritySettings />
             </CardContent>
           </Card>
         </TabsContent>
